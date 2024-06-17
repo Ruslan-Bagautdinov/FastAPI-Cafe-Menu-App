@@ -16,3 +16,13 @@ DATABASE_URL = (f"postgresql+asyncpg"
                 f"/{POSTGRES_DB}")
 
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
+
+MIME_TYPES = {
+    "jpeg": "image/jpeg",
+    "jpg": "image/jpeg",
+    "png": "image/png",
+    "gif": "image/gif",
+    "bmp": "image/bmp",
+    "tiff": "image/tiff",
+    "webp": "image/webp",
+}

@@ -17,10 +17,8 @@ async def read_restaurant(restaurant_id: int = Query(None,
 
     if restaurant_id is not None:
         restaurant = await get_restaurant_by_id(session, restaurant_id)
-    # elif restaurant_name is not None:
-    #     restaurant = await get_restaurant_by_name(session, restaurant_name)
     else:
-        raise HTTPException(status_code=400, detail="Either restaurant_id or restaurant_name must be provided")
+        raise HTTPException(status_code=400, detail="Restaurant_id must be provided")
 
     if restaurant is None:
         raise HTTPException(status_code=404, detail="Restaurant not found")
