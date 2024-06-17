@@ -4,5 +4,5 @@
 .stuff/
 **/__pycache__/
 alembic/versions/*
-photo/*
+static/photo/*
 .env
