@@ -5,8 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # own imports
 
 from app.database.postgre_db import get_session
-from app.database.crud import get_restaurant_by_id
-from app.database.models import Restaurant
+from app.database.crud import get_restaurant_by_id  # , get_restaurant_by_name
 
 router = APIRouter()
 
@@ -16,7 +15,13 @@ async def read_restaurant(restaurant_id: int = Query(None,
                                                      description="The ID of the restaurant"),
                           session: AsyncSession = Depends(get_session)):
 
-    restaurant = await get_restaurant_by_id(session, restaurant_id)
+    if restaurant_id is not None:
+        restaurant = await get_restaurant_by_id(session, restaurant_id)
+    # elif restaurant_name is not None:
+    #     restaurant = await get_restaurant_by_name(session, restaurant_name)
+    else:
+        raise HTTPException(status_code=400, detail="Either restaurant_id or restaurant_name must be provided")
+
     if restaurant is None:
         raise HTTPException(status_code=404, detail="Restaurant not found")
 
