@@ -1,7 +1,9 @@
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from typing import Union, Optional, List, Dict
+
+from typing import Optional, List, Dict
 
 # own imports
 from app.database.models import (Restaurant,
@@ -9,7 +11,8 @@ from app.database.models import (Restaurant,
                                  Category,
                                  User,
                                  Basket,
-                                 Order
+                                 Order,
+                                 CompletedBasket
                                  )
 
 
@@ -87,6 +90,45 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession, re
     return list(result.scalars().all())
 
 
+async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
+    """
+    Retrieves detailed information about a Dish including related Restaurant and Category details.
+
+    Args:
+        session (AsyncSession): The SQLAlchemy asynchronous session.
+        dish_id (int): The ID of the Dish to retrieve.
+
+    Returns:
+        dict: A dictionary containing detailed information about the Dish.
+    """
+    # Construct the query to fetch the Dish with related Restaurant and Category
+    query = select(Dish).options(
+        selectinload(Dish.restaurant),
+        selectinload(Dish.category)
+    ).where(Dish.id == dish_id)
+
+    # Execute the query
+    result = await session.execute(query)
+    dish = result.scalars().first()
+
+    if not dish:
+        return None  # or raise an exception if preferred
+
+    # Construct the detailed information dictionary
+    dish_details = {
+        "id": dish.id,
+        "restaurant_name": dish.restaurant.name,
+        "category_name": dish.category.name,
+        "name": dish.name,
+        "photo": dish.photo,
+        "description": dish.description,
+        "price": dish.price,
+        "extra": dish.extra
+    }
+
+    return dish_details
+
+
 async def create_user(session: AsyncSession, restaurant_id: int, table_id: int):
     """
     Creates a new user and an associated basket in the database.
@@ -137,9 +179,6 @@ async def create_order(session: AsyncSession, table_id: int, dish_id: int, extra
     return order
 
 
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-
 async def get_basket_orders(session: AsyncSession, table_id: int):
     """
     Retrieves all orders in a user's basket.
@@ -160,7 +199,49 @@ async def get_basket_orders(session: AsyncSession, table_id: int):
     return []
 
 
-from sqlalchemy import select
+
+async def create_completed_basket(session: AsyncSession, table_id: int):
+    """
+    Creates a new CompletedBasket record for the given table_id.
+
+    Args:
+        session (AsyncSession): The SQLAlchemy asynchronous session.
+        table_id (int): The table ID for which to create the CompletedBasket.
+
+    Returns:
+        CompletedBasket: The created CompletedBasket object.
+    """
+    # Fetch the User record to get the fetching_time
+    user_query = await session.execute(
+        select(User).where(User.table_id == table_id)
+    )
+    user = user_query.scalars().first()
+    if not user:
+        raise ValueError(f"No user found for table_id: {table_id}")
+
+    # Fetch the Basket record to get the list of orders
+    basket_query = await session.execute(
+        select(Basket).options(selectinload(Basket.orders)).where(Basket.table_id == table_id)
+    )
+    basket = basket_query.scalars().first()
+    if not basket:
+        raise ValueError(f"No basket found for table_id: {table_id}")
+
+    # Extract dish_id and extras from each order
+    orders_data = [(order.dish_id, order.extra) for order in basket.orders]
+
+    # Create a new CompletedBasket record
+    completed_basket = CompletedBasket(
+        table_id=table_id,
+        fetching_time=user.time,
+        orders_data=orders_data
+    )
+    session.add(completed_basket)
+    await session.commit()
+    await session.refresh(completed_basket)
+
+    return completed_basket
+
 
 async def delete_user(session: AsyncSession, table_id: int):
     """

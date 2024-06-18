@@ -1,6 +1,6 @@
-from sqlalchemy import JSON, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 from datetime import datetime
 
 
@@ -65,3 +65,12 @@ class Basket(Base):
     table_id: Mapped[int] = mapped_column(ForeignKey('users.table_id', ondelete='CASCADE'), nullable=False)
 
     orders: Mapped[List['Order']] = relationship('Order', backref='basket')
+
+
+class CompletedBasket(Base):
+    __tablename__ = 'completed_baskets'
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    table_id: Mapped[int] = mapped_column(ForeignKey('users.table_id', ondelete='CASCADE'), nullable=False)
+    fetching_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    orders_data: Mapped[List[Tuple[int, dict]]] = mapped_column(JSON, nullable=False)
