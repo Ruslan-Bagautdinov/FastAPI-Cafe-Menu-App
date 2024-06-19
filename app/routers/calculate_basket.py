@@ -8,6 +8,7 @@ from app.database.crud import get_dishes_by_restaurant_and_category_and_id
 
 router = APIRouter()
 
+
 @router.post("/calculate-cost/")
 async def calculate_cost(order_request: OrderRequest,
                          session: AsyncSession = Depends(get_session)):
@@ -15,7 +16,7 @@ async def calculate_cost(order_request: OrderRequest,
 
     for order in order_request.orders:
 
-        dish = await get_dishes_by_restaurant_and_category_and_id(session, order.dish_id)
+        dish = await get_dishes_by_restaurant_and_category_and_id(session, dish_id=order.dish_id)
 
         dish_cost = 0.0  # Assume this is fetched or known based on dish_id
 
