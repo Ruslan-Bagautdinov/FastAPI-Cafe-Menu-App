@@ -31,19 +31,37 @@ async def get_restaurant_id_name_pairs(session: AsyncSession) -> dict:
     return {restaurant_id: restaurant_name for restaurant_id, restaurant_name in pairs}
 
 
-async def get_category_id_name_pairs(session: AsyncSession) -> Dict[int, str]:
+async def get_category_id_name_pairs(restaurant_id: int, session: AsyncSession) -> Dict[int, str]:
     """
-    Retrieves a dictionary mapping category IDs to their names.
+    Fetches all dishes for a given restaurant_id, extracts their category_id,
+    and returns a dictionary with category_id as keys and category_name as values.
 
     Args:
+        restaurant_id (int): The ID of the restaurant.
         session (AsyncSession): The SQLAlchemy asynchronous session.
 
     Returns:
-        Dict[int, str]: A dictionary where keys are category IDs and values are category names.
+        Dict[int, str]: A dictionary with category_id as keys and category_name as values.
     """
-    result = await session.execute(select(Category.id, Category.name))
-    pairs = result.fetchall()
-    return {category_id: category_name for category_id, category_name in pairs}
+    # Fetch all dishes for the given restaurant_id
+    dish_query = await session.execute(
+        select(Dish).where(Dish.restaurant_id == restaurant_id)
+    )
+    dishes = dish_query.scalars().all()
+
+    # Extract all unique category_id from the dishes
+    category_ids = {dish.category_id for dish in dishes}
+
+    # Fetch category names for the extracted category_ids
+    category_query = await session.execute(
+        select(Category).where(Category.id.in_(category_ids))
+    )
+    categories = category_query.scalars().all()
+
+    # Create a dictionary with category_id as keys and category_name as values
+    category_id_name_pairs = {category.id: category.name for category in categories}
+
+    return category_id_name_pairs
 
 
 async def get_restaurant_by_id(session: AsyncSession, restaurant_id: int) -> Restaurant:

@@ -28,7 +28,7 @@ load_dotenv(find_dotenv())
 #                      f"/{WORK_POSTGRES_DB}")
 
 
-WORK_DATABASE_URL="postgresql+asyncpg://food_app:GoKY53b4EQ1Jy5@94.124.78.52:5432/food_app"
+WORK_DATABASE_URL = "postgresql+asyncpg://food_app:GoKY53b4EQ1Jy5@94.124.78.52:5432/food_app"
 
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 

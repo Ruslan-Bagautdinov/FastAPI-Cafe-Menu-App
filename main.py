@@ -38,7 +38,6 @@ app.include_router(get_image.router, prefix="/images", tags=["images"])
 # app.include_router(create_new_order.router, prefix="/orders", tags=["orders"])
 
 
-
 @app.get("/")
 async def root():
     return RedirectResponse(url='/docs')
