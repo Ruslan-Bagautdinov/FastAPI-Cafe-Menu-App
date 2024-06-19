@@ -33,9 +33,9 @@ app.include_router(get_restaurant_by_id.router, prefix="/restaurant", tags=["res
 app.include_router(get_dishes.router, prefix="/dishes", tags=["dishes"])
 app.include_router(get_dish_details.router, prefix="/dish_details", tags=["dish_details"])
 app.include_router(get_image.router, prefix="/images", tags=["images"])
-app.include_router(create_new_user.router, prefix="/users", tags=["users"])
-app.include_router(get_basket.router, prefix="/baskets", tags=["baskets"])
-app.include_router(create_new_order.router, prefix="/orders", tags=["orders"])
+# app.include_router(create_new_user.router, prefix="/users", tags=["users"])
+# app.include_router(get_basket.router, prefix="/baskets", tags=["baskets"])
+# app.include_router(create_new_order.router, prefix="/orders", tags=["orders"])
 
 
 
