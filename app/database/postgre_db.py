@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import (AsyncSession,
 from sqlalchemy.orm import declarative_base
 
 
-from app.config import WORK_DATABASE_URL #, LOCAL_DATABASE_URL
+from app.config import WORK_DATABASE_URL, LOCAL_DATABASE_URL
 
 engine = create_async_engine(WORK_DATABASE_URL, echo=False)
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 from datetime import datetime
 
 
@@ -34,36 +34,45 @@ class RestaurantSchema(BaseModel):
     class Config:
         from_attributes = True
 
-#
-# class UserSchema(BaseModel):
-#     table_id: int
-#     restaurant_id: int
-#     time: datetime
-#
-#     class Config:
-#         from_attributes = True
-#
-#
-# class OrderCreate(BaseModel):
-#     user_id: int
-#     dish_id: int
-#     extra: Optional[Dict] = None
-#
-#
-# class OrderSchema(BaseModel):
-#     user_id: int
-#     table_id: int
-#     dish_id: int
-#     extra: Optional[Dict] = None
-#
-#     class Config:
-#         from_attributes = True
-#
-#
-# class BasketView(BaseModel):
-#     id: int
-#     user_id: int
-#     orders: List[OrderSchema]
-#
-#     class Config:
-#         from_attributes = True
+
+class OrderItem(BaseModel):
+    dish_id: int
+    extras: Dict[str, Tuple[str, float]]
+
+
+class OrderRequest(BaseModel):
+    restaurant_id: int
+    table_id: int
+    orders: List[OrderItem]
+
+
+class UserBasketResponse(BaseModel):
+    user_id: int
+    restaurant_id: int
+    table_id: int
+    basket_id: int
+
+
+class OrderCreate(BaseModel):
+    user_id: int
+    dish_id: int
+    extra: Optional[Dict] = None
+
+
+class OrderSchema(BaseModel):
+    user_id: int
+    table_id: int
+    dish_id: int
+    extra: Optional[Dict] = None
+
+    class Config:
+        from_attributes = True
+
+
+class BasketView(BaseModel):
+    id: int
+    user_id: int
+    orders: List[OrderSchema]
+
+    class Config:
+        from_attributes = True

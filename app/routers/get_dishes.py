@@ -13,16 +13,17 @@ router = APIRouter()
 
 @router.get("/", response_model=List[DishSchema])
 async def get_dishes(
-        restaurant_id: int = Query(..., description="The ID of the restaurant"),
+        restaurant_id: Optional[int] = Query(None, description="The ID of the restaurant (optional)"),
         category_id: Optional[int] = Query(None, description="The ID of the category (optional)"),
         dish_id: Optional[int] = Query(None, description="The ID of the dish (optional)"),
         session: AsyncSession = Depends(get_session)
 ):
     """
     Retrieves a list of dishes based on the provided restaurant ID, optionally filtered by category ID and/or dish ID.
+    If restaurant_id is not provided, all dishes are returned.
 
     Args:
-        restaurant_id (int): The ID of the restaurant to retrieve dishes from.
+        restaurant_id (Optional[int]): The ID of the restaurant to retrieve dishes from. Defaults to None.
         category_id (Optional[int]): The ID of the category to filter dishes by. Defaults to None.
         dish_id (Optional[int]): The ID of the specific dish to retrieve. Defaults to None.
         session (AsyncSession): The SQLAlchemy asynchronous session, obtained from the dependency.
@@ -31,9 +32,9 @@ async def get_dishes(
         List[DishSchema]: A list of DishSchema objects matching the criteria.
 
     Raises:
-        HTTPException: 404 error if no dishes are found for the given restaurant and category.
+        HTTPException: 404 error if no dishes are found for the given criteria.
     """
     dishes = await get_dishes_by_restaurant_and_category_and_id(session, restaurant_id, category_id, dish_id)
     if not dishes:
-        raise HTTPException(status_code=404, detail="No dishes found for the given restaurant and category")
+        raise HTTPException(status_code=404, detail="No dishes found for the given criteria")
     return dishes

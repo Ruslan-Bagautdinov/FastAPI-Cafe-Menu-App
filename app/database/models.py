@@ -46,47 +46,46 @@ class Dish(Base):
     restaurant: Mapped['Restaurant'] = relationship('Restaurant', back_populates='dishes')
     category: Mapped['Category'] = relationship('Category', back_populates='dishes')
 
-#
-# class User(Base):
-#
-#     __tablename__ = 'users'
-#
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-#     table_id: Mapped[int] = mapped_column(nullable=False)
-#     restaurant_id: Mapped[int] = mapped_column(ForeignKey('restaurants.id'), nullable=False)
-#     time: Mapped[datetime] = mapped_column(default=datetime.now)
-#
-#
-# class Basket(Base):
-#
-#     __tablename__ = 'baskets'
-#
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-#     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-#
-#     orders: Mapped[List['Order']] = relationship('Order', back_populates='basket')
-#
-#
-# class Order(Base):
-#
-#     __tablename__ = 'orders'
-#
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-#     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-#     dish_id: Mapped[int] = mapped_column(ForeignKey('dishes.id'), nullable=False)
-#     basket_id: Mapped[int] = mapped_column(ForeignKey('baskets.id', ondelete='CASCADE'), nullable=False)
-#     extra: Mapped[dict] = mapped_column(JSON, nullable=True)
-#
-#     dish: Mapped['Dish'] = relationship('Dish', backref='orders')
-#     basket: Mapped['Basket'] = relationship('Basket', back_populates='orders')
-#
-#
-# class CompletedBasket(Base):
-#
-#     __tablename__ = 'completed_baskets'
-#
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-#     restaurant_name: Mapped[str] = mapped_column(nullable=False)
-#     table_id: Mapped[int] = mapped_column(nullable=False)
-#     orders_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-#     orders_data: Mapped[List[Tuple[int, dict]]] = mapped_column(JSON, nullable=False)
+
+class User(Base):
+
+    __tablename__ = 'users'
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    restaurant_id: Mapped[int] = mapped_column(ForeignKey('restaurants.id'), nullable=False)
+    table_id: Mapped[int] = mapped_column(nullable=False)
+    time: Mapped[datetime] = mapped_column(default=datetime.now)
+
+
+class Basket(Base):
+
+    __tablename__ = 'baskets'
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    orders: Mapped[List['Order']] = relationship('Order', back_populates='basket')
+
+
+class Order(Base):
+
+    __tablename__ = 'orders'
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    dish_id: Mapped[int] = mapped_column(ForeignKey('dishes.id'), nullable=False)
+    basket_id: Mapped[int] = mapped_column(ForeignKey('baskets.id', ondelete='CASCADE'), nullable=False)
+    extra: Mapped[dict] = mapped_column(JSON, nullable=True)
+
+    dish: Mapped['Dish'] = relationship('Dish', backref='orders')
+    basket: Mapped['Basket'] = relationship('Basket', back_populates='orders')
+
+
+class CompletedBasket(Base):
+
+    __tablename__ = 'completed_baskets'
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    restaurant_name: Mapped[str] = mapped_column(nullable=False)
+    table_id: Mapped[int] = mapped_column(nullable=False)
+    orders_time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    orders_data: Mapped[List[Tuple[int, dict]]] = mapped_column(JSON, nullable=False)
