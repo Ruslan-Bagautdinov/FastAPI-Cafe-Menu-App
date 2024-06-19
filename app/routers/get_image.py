@@ -9,7 +9,7 @@ from app.config import MIME_TYPES
 router = APIRouter()
 
 STATIC_PHOTO_FOLDER = "static/photo"
-default_avatar_path = os.path.join(STATIC_PHOTO_FOLDER, 'default_04.jpeg')
+default_avatar_path = os.path.join(STATIC_PHOTO_FOLDER, 'default_cafe_04.jpeg')
 
 
 @router.get("/")
