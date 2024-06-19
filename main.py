@@ -4,7 +4,8 @@ from fastapi.staticfiles import StaticFiles
 
 from contextlib import asynccontextmanager
 
-# from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
+
 
 # own_import
 from app.database.postgre_db import init_db
@@ -31,13 +32,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=['*'],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"]
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 app.include_router(get_all_restaurants.router, prefix="/all_restaurants", tags=["all_restaurants"])
 app.include_router(get_all_categories.router, prefix="/all_categories", tags=["all_categories"])
@@ -53,3 +54,4 @@ app.include_router(get_image.router, prefix="/images", tags=["images"])
 @app.get("/")
 async def root():
     return RedirectResponse(url='/docs')
+
