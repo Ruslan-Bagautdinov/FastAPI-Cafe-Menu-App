@@ -43,36 +43,37 @@ class OrderItem(BaseModel):
 class OrderRequest(BaseModel):
     restaurant_id: int
     table_id: int
+    order_datetime: datetime
     orders: List[OrderItem]
 
-
-class UserBasketResponse(BaseModel):
-    user_id: int
-    restaurant_id: int
-    table_id: int
-    basket_id: int
-
-
-class OrderCreate(BaseModel):
-    user_id: int
-    dish_id: int
-    extra: Optional[Dict] = None
-
-
-class OrderSchema(BaseModel):
-    user_id: int
-    table_id: int
-    dish_id: int
-    extra: Optional[Dict] = None
-
-    class Config:
-        from_attributes = True
-
-
-class BasketView(BaseModel):
-    id: int
-    user_id: int
-    orders: List[OrderSchema]
-
-    class Config:
-        from_attributes = True
+#
+# class UserBasketResponse(BaseModel):
+#     user_id: int
+#     restaurant_id: int
+#     table_id: int
+#     basket_id: int
+#
+#
+# class OrderCreate(BaseModel):
+#     user_id: int
+#     dish_id: int
+#     extra: Optional[Dict] = None
+#
+#
+# class OrderSchema(BaseModel):
+#     user_id: int
+#     table_id: int
+#     dish_id: int
+#     extra: Optional[Dict] = None
+#
+#     class Config:
+#         from_attributes = True
+#
+#
+# class BasketView(BaseModel):
+#     id: int
+#     user_id: int
+#     orders: List[OrderSchema]
+#
+#     class Config:
+#         from_attributes = True

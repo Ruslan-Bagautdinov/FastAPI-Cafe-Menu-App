@@ -15,13 +15,9 @@ from app.routers import (get_all_restaurants,
                          get_restaurant_by_id,
                          get_dishes,
                          get_dish_details,
-                         get_image)
-
-
-from app.routers import (create_new_user,
-                         get_basket,
-                         create_new_order
-                         )
+                         get_image,
+                         calculate_basket,
+                         add_mock_dishes)
 
 
 @asynccontextmanager
@@ -46,9 +42,8 @@ app.include_router(get_restaurant_by_id.router, prefix="/restaurant", tags=["res
 app.include_router(get_dishes.router, prefix="/dishes", tags=["dishes"])
 app.include_router(get_dish_details.router, prefix="/dish_details", tags=["dish_details"])
 app.include_router(get_image.router, prefix="/images", tags=["images"])
-# app.include_router(create_new_user.router, prefix="/users", tags=["users"])
-# app.include_router(get_basket.router, prefix="/baskets", tags=["baskets"])
-# app.include_router(create_new_order.router, prefix="/orders", tags=["orders"])
+app.include_router(calculate_basket.router, prefix="/calculate_basket", tags=["calculate_basket"])
+app.include_router(add_mock_dishes.router, prefix="/add_mock_dishes", tags=["add_mock_dishes"])
 
 
 @app.get("/")
