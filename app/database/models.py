@@ -8,9 +8,7 @@ from sqlalchemy import (Column,
                         Enum)
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
-from typing import Optional, List, Dict, Tuple
-from datetime import datetime
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 import uuid
 
 
@@ -64,6 +62,7 @@ class Basket(Base):
     restaurant_id = Column(Integer, nullable=False)
     table_id = Column(Integer, nullable=False)
     order_datetime = Column(DateTime, nullable=False)
+    order_items = Column(JSONB, nullable=True)
     total_cost = Column(Numeric(10, 2), nullable=False)
     status = Column(Enum("None", "in work", "complete", name="status_enum"), default="None")
     waiter = Column(String, nullable=True)

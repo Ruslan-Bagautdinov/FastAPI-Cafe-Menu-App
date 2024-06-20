@@ -44,7 +44,7 @@ class OrderRequest(BaseModel):
     restaurant_id: int
     table_id: int
     order_datetime: datetime
-    orders: List[OrderItem]
+    order_items: List[OrderItem]
 
 #
 # class UserBasketResponse(BaseModel):
