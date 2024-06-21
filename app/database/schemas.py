@@ -6,12 +6,13 @@ from datetime import datetime
 class DishSchema(BaseModel):
     id: int
     restaurant_id: int
-    category_id: Optional[int]
+    category_id: Optional[int] = None
     name: str
-    photo: Optional[str]
-    description: Optional[str]
+    photo: Optional[str] = None
+    description: Optional[str] = None
     price: float
-    extra: Optional[Dict]
+    currency: Optional[str] = None
+    extra: Optional[Dict] = None
 
     class Config:
         from_attributes = True

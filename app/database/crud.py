@@ -42,26 +42,22 @@ async def get_category_id_name_pairs(session: AsyncSession, restaurant_id: Optio
         Dict[int, str]: A dictionary with category_id as keys and category_name as values.
     """
     if restaurant_id is not None:
-        # Fetch all dishes for the given restaurant_id
+
         dish_query = await session.execute(
             select(Dish).where(Dish.restaurant_id == restaurant_id)
         )
         dishes = dish_query.scalars().all()
 
-        # Extract all unique category_id from the dishes
         category_ids = {dish.category_id for dish in dishes}
 
-        # Fetch category names for the extracted category_ids
         category_query = await session.execute(
             select(Category).where(Category.id.in_(category_ids))
         )
     else:
-        # Fetch all categories
         category_query = await session.execute(select(Category))
 
     categories = category_query.scalars().all()
 
-    # Create a dictionary with category_id as keys and category_name as values
     category_id_name_pairs = {category.id: category.name for category in categories}
 
     return category_id_name_pairs
@@ -85,7 +81,7 @@ async def get_restaurant_by_id(session: AsyncSession, restaurant_id: int) -> Res
 async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
                                                        restaurant_id: Optional[int] = None,
                                                        category_id: Optional[int] = None,
-                                                       dish_id: Optional[int] = None) -> List[Dish] | None:
+                                                       dish_id: Optional[int] = None) -> List[dict] | None:
     """
     Retrieves a list of dishes based on the provided restaurant ID, optionally filtered by category ID and/or dish ID.
     If restaurant_id is not provided, all dishes are returned.
@@ -97,9 +93,9 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
         dish_id (Optional[int]): The ID of the specific dish to retrieve. Defaults to None.
 
     Returns:
-        List[Dish] | None: A list of Dish objects matching the criteria, or None if no dishes are found.
+        List[dict] | None: A list of dictionaries containing dish details and restaurant currency, or None if no dishes are found.
     """
-    query = select(Dish)
+    query = select(Dish).options(selectinload(Dish.restaurant))
 
     if restaurant_id is not None:
         query = query.where(Dish.restaurant_id == restaurant_id)
@@ -112,7 +108,26 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
 
     result = await session.execute(query)
     dishes = result.scalars().all()
-    return dishes if dishes else None
+
+    if not dishes:
+        return None
+
+    dish_list = []
+    for dish in dishes:
+        dish_info = {
+            "id": dish.id,
+            "restaurant_id": dish.restaurant_id,
+            "category_id": dish.category_id,
+            "name": dish.name,
+            "photo": dish.photo,
+            "description": dish.description,
+            "price": dish.price,
+            "extra": dish.extra,
+            "currency": dish.restaurant.currency
+        }
+        dish_list.append(dish_info)
+
+    return dish_list
 
 
 async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
@@ -126,20 +141,18 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
     Returns:
         dict: A dictionary containing detailed information about the Dish.
     """
-    # Construct the query to fetch the Dish with related Restaurant and Category
+
     query = select(Dish).options(
         selectinload(Dish.restaurant),
         selectinload(Dish.category)
     ).where(Dish.id == dish_id)
 
-    # Execute the query
     result = await session.execute(query)
     dish = result.scalars().first()
 
     if not dish:
-        return None  # or raise an exception if preferred
+        return None
 
-    # Construct the detailed information dictionary
     dish_details = {
         "id": dish.id,
         "restaurant_name": dish.restaurant.name,
@@ -148,6 +161,7 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
         "photo": dish.photo,
         "description": dish.description,
         "price": dish.price,
+        "currency": dish.restaurant.currency,
         "extra": dish.extra
     }
 
