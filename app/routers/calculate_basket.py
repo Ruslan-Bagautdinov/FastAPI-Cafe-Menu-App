@@ -23,7 +23,7 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
 
     Returns:
         dict: A dictionary containing the restaurant ID, table ID, order datetime, list of orders,
-        the total cost of the orders and currency used in restaurant.
+        the total cost of the orders, currency used in restaurant, and the Basket ID.
 
     Raises:
         HTTPException: 404 error if no dishes are found for the given restaurant and dish IDs.
@@ -63,13 +63,8 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
         waiter=None
     )
     session.add(basket)
+    await session.flush()
     await session.commit()
 
-    return {
-        "restaurant_id": order_request.restaurant_id,
-        "table_id": order_request.table_id,
-        "order_datetime": order_request.order_datetime,
-        "order_items": order_items,
-        "total_cost": total_cost,
-        "currency": restaurant_currency
-    }
+
+    return

@@ -49,4 +49,3 @@ app.include_router(add_mock_dishes.router, prefix="/add_mock_dishes", tags=["add
 @app.get("/")
 async def root():
     return RedirectResponse(url='/docs')
-
