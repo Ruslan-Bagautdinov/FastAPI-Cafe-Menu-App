@@ -67,4 +67,12 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
     await session.commit()
 
 
-    return
+    return {
+        "basket_id": basket.id,
+        "restaurant_id": order_request.restaurant_id,
+        "table_id": order_request.table_id,
+        "order_datetime": order_request.order_datetime,
+        "order_items": order_items,
+        "total_cost": total_cost,
+        "currency": restaurant_currency
+    }
