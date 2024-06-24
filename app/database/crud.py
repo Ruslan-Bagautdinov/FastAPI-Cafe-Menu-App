@@ -5,11 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import Optional, List, Dict
 
+import uuid
+
 # own imports
 from app.database.models import (Restaurant,
                                  Dish,
                                  Category,
-                                 Basket
+                                 WaiterCall
                                  )
 
 
@@ -166,6 +168,19 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
     }
 
     return dish_details
+
+
+# async def add_call(session: AsyncSession, restaurant_id: int, table_id: int, status: str):
+#     new_call = WaiterCall(
+#         restaurant_id=restaurant_id,
+#         table_id=table_id,
+#         status=status
+#     )
+#     session.add(new_call)
+#     await session.commit()
+#     await session.refresh(new_call)
+#     return new_call
+
 
 #
 # async def create_user(session: AsyncSession, restaurant_id: int, table_id: int):

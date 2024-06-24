@@ -57,6 +57,7 @@ class Dish(Base):
 
 
 class Basket(Base):
+
     __tablename__ = 'baskets'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -66,5 +67,15 @@ class Basket(Base):
     order_items: Mapped[dict] = mapped_column(JSONB, nullable=True)
     total_cost: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     currency: Mapped[str] = mapped_column(nullable=False, default='USD')
-    status: Mapped[str] = mapped_column(Enum("None", "in work", "complete", name="status_enum"), default="None")
+    status: Mapped[str] = mapped_column(String, nullable=True)
     waiter: Mapped[str] = mapped_column(String, nullable=True)
+
+
+class WaiterCall(Base):
+
+    __tablename__ = 'waiter_calls'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    restaurant_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    table_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String, nullable=False)

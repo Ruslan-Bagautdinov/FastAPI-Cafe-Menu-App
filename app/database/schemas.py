@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Tuple
 from datetime import datetime
+import uuid
 
 
 class DishSchema(BaseModel):
@@ -47,6 +48,25 @@ class OrderRequest(BaseModel):
     order_datetime: datetime
     order_items: List[OrderItem]
 
+
+class WaiterCallCreateRequest(BaseModel):
+    restaurant_id: int = Field(..., description="ID of the restaurant")
+    table_id: int = Field(..., description="ID of the table")
+    status: str = Field(..., description="Status of the waiter call")
+
+    @field_validator('status')
+    def check_status(cls, v):
+        allowed_statuses = {"call", "clean", "check"}
+        if v not in allowed_statuses:
+            raise ValueError(f"Invalid status: {v}. Allowed statuses are: {', '.join(allowed_statuses)}")
+        return v
+
+
+class WaiterCallResponse(BaseModel):
+    id: uuid.UUID = Field(..., description="Unique identifier of the waiter call")
+    restaurant_id: int = Field(..., description="ID of the restaurant")
+    table_id: int = Field(..., description="ID of the table")
+    status: str = Field(..., description="Status of the waiter call")
 #
 # class UserBasketResponse(BaseModel):
 #     user_id: int
