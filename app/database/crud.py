@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from typing import Optional, List, Dict
+from decimal import Decimal
 
 import uuid
 
@@ -162,7 +163,7 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
         "name": dish.name,
         "photo": dish.photo,
         "description": dish.description,
-        "price": dish.price,
+        "price": Decimal(str(dish.price)).quantize(Decimal('0.01')),  # Ensure price has 2 decimal places
         "currency": dish.restaurant.currency,
         "extra": dish.extra
     }

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
+from decimal import Decimal
 
 # own imports
 from app.database.postgre_db import get_session
@@ -15,7 +16,7 @@ router = APIRouter()
 async def get_dishes(
         restaurant_id: Optional[int] = Query(None, description="The ID of the restaurant (optional)"),
         category_id: Optional[int] = Query(None, description="The ID of the category (optional)"),
-        dish_id: Optional[int] = Query(None, description="The ID of the dish (optional)"),
+        dish_id: Optional[int] = Query(None, description="The ID of the specific dish to retrieve (optional)"),
         session: AsyncSession = Depends(get_session)
 ):
     """
@@ -37,4 +38,9 @@ async def get_dishes(
     dishes = await get_dishes_by_restaurant_and_category_and_id(session, restaurant_id, category_id, dish_id)
     if not dishes:
         raise HTTPException(status_code=404, detail="No dishes found for the given criteria")
+
+    # Convert price to Decimal with 2 decimal places
+    for dish in dishes:
+        dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
+
     return dishes

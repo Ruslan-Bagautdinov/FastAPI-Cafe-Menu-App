@@ -6,9 +6,8 @@ from typing import Dict
 from app.database.crud import get_dish_detailed_info
 from app.database.postgre_db import get_session
 
+
 router = APIRouter()
-
-
 @router.get("/",
             response_model=Dict,
             description="Retrieve detailed information about a Dish including related Restaurant and Category details.")

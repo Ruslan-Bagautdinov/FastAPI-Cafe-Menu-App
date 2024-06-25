@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Tuple
 from datetime import datetime
+from decimal import Decimal
 import uuid
 
 
@@ -11,12 +12,15 @@ class DishSchema(BaseModel):
     name: str
     photo: Optional[str] = None
     description: Optional[str] = None
-    price: float
+    price: Decimal = Field(..., description="Price in decimal with 2 digits precision")
     currency: Optional[str] = None
     extra: Optional[Dict] = None
 
     class Config:
         from_attributes = True
+        json_encoders = {
+            Decimal: lambda v: f"{v:.2f}"  # Ensure Decimal values are formatted to 2 decimal places
+        }
 
 
 class CategorySchema(BaseModel):
