@@ -116,7 +116,11 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
         return None
 
     dish_list = []
+
     for dish in dishes:
+
+        dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
+
         dish_info = {
             "id": dish.id,
             "restaurant_id": dish.restaurant_id,

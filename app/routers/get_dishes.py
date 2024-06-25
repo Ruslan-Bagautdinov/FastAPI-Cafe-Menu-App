@@ -39,8 +39,4 @@ async def get_dishes(
     if not dishes:
         raise HTTPException(status_code=404, detail="No dishes found for the given criteria")
 
-    # Convert price to Decimal with 2 decimal places
-    for dish in dishes:
-        dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
-
     return dishes
