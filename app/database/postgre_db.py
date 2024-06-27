@@ -4,22 +4,27 @@ from sqlalchemy.ext.asyncio import (AsyncSession,
 from sqlalchemy.orm import declarative_base
 import logging
 
-from app.config import WORK_DATABASE_URL, LOCAL_DATABASE_URL
+from app.config import HOME, WORK_DATABASE_URL, LOCAL_DATABASE_URL
+
+if HOME:
+    DATABASE_URL = LOCAL_DATABASE_URL
+else:
+    DATABASE_URL = WORK_DATABASE_URL
+
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-engine = create_async_engine(WORK_DATABASE_URL, echo=False)
+engine = create_async_engine(DATABASE_URL, echo=False)
 
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
 
 
-
 async def init_db():
     try:
-        engine = create_async_engine(WORK_DATABASE_URL, echo=False)
+        engine = create_async_engine(DATABASE_URL, echo=False)
         async with engine.begin() as conn:
             logger.debug("Creating tables...")
             await conn.run_sync(Base.metadata.create_all)
