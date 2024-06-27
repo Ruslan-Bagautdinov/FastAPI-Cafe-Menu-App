@@ -6,7 +6,7 @@ load_dotenv(find_dotenv())
 WORK_DATABASE_URL = getenv('WORK_DATABASE_URL')
 LOCAL_DATABASE_URL = getenv('LOCAL_DATABASE_URL')
 
-HOME = getenv('HOME', False)
+HOME_DB = getenv('HOME_DB', False)
 
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 
