@@ -10,6 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 # own_import
 from app.database.postgre_db import init_db
 
+# routers
 from app.routers import (get_all_restaurants,
                          get_all_categories,
                          get_restaurant_by_id,

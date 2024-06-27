@@ -36,6 +36,7 @@ class RestaurantSchema(BaseModel):
     name: str
     photo: Optional[str]
     rating: Optional[float]
+    tables_amount: Optional[int]
 
     class Config:
         from_attributes = True

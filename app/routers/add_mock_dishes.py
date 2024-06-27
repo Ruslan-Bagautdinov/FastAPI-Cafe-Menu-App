@@ -12,7 +12,7 @@ from app.database.crud import (get_dishes_by_restaurant_and_category_and_id,
 router = APIRouter()
 
 
-@router.get("/add_mock_dishes/")
+@router.get("/")
 async def add_mock_dishes(restaurant_id: int, i: int, session: AsyncSession = Depends(get_session)):
     """
         Generate mock dishes for a specified restaurant and save them into the 'dishes' table.

@@ -18,6 +18,7 @@ from app.database.postgre_db import Base
 
 
 class Restaurant(Base):
+
     __tablename__ = 'restaurants'
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
@@ -25,6 +26,7 @@ class Restaurant(Base):
     photo: Mapped[str] = mapped_column(nullable=True)
     rating: Mapped[Decimal] = mapped_column(Numeric(2, 1), nullable=False)  # Use Decimal for type annotation
     currency: Mapped[str] = mapped_column(nullable=False, default='USD')
+    tables_amount: Mapped[int] = mapped_column(nullable=False)
 
     dishes: Mapped[list['Dish']] = relationship('Dish', back_populates='restaurant', cascade='all, delete-orphan')
 
