@@ -35,8 +35,15 @@ class RestaurantSchema(BaseModel):
     id: int
     name: str
     photo: Optional[str]
-    rating: Optional[float]
+    rating: Optional[Decimal]
     tables_amount: Optional[int]
+
+    @field_validator('rating')
+    @classmethod
+    def validate_rating(cls, value):
+        if value is not None:
+            return round(value, 1)
+        return value
 
     class Config:
         from_attributes = True
@@ -103,3 +110,4 @@ class WaiterCallResponse(BaseModel):
 #
 #     class Config:
 #         from_attributes = True
+
