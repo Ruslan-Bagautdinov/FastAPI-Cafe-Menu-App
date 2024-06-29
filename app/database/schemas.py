@@ -35,7 +35,7 @@ class RestaurantSchema(BaseModel):
     id: int
     name: str
     photo: Optional[str]
-    rating: Optional[float]
+    rating: Optional[str]
     tables_amount: Optional[int]
 
     class Config:
