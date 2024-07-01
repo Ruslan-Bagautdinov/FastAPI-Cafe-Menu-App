@@ -49,16 +49,33 @@ class RestaurantSchema(BaseModel):
         from_attributes = True
 
 
-class OrderItem(BaseModel):
+class OrderItemSave(BaseModel):
     dish_id: int
-    extras: Dict[str, Tuple[str, float]]
+    extras: Dict[str, Tuple[str, float]]  # Use float for prices
 
 
-class OrderRequest(BaseModel):
+class OrderRequestSave(BaseModel):
     restaurant_id: int
     table_id: int
     order_datetime: datetime
-    order_items: List[OrderItem]
+    order_items: List[OrderItemSave]
+
+
+class OrderItemReturn(BaseModel):
+    dish_id: int
+    extras: Dict[str, Tuple[str, str]]
+
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: f"{v:.2f}"  # Ensure Decimal values are formatted to 2 decimal places
+        }
+
+
+class OrderRequestReturn(BaseModel):
+    restaurant_id: int
+    table_id: int
+    order_datetime: datetime
+    order_items: List[OrderItemReturn]
 
 
 class WaiterCallCreateRequest(BaseModel):
@@ -79,6 +96,10 @@ class WaiterCallResponse(BaseModel):
     restaurant_id: int = Field(..., description="ID of the restaurant")
     table_id: int = Field(..., description="ID of the table")
     status: str = Field(..., description="Status of the waiter call")
+
+
+
+
 #
 # class UserBasketResponse(BaseModel):
 #     user_id: int

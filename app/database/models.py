@@ -81,3 +81,4 @@ class WaiterCall(Base):
     restaurant_id: Mapped[int] = mapped_column(Integer, nullable=False)
     table_id: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False)
+

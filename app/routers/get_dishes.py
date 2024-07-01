@@ -5,7 +5,8 @@ from decimal import Decimal
 
 # own imports
 from app.database.postgre_db import get_session
-from app.database.crud import get_dishes_by_restaurant_and_category_and_id
+from app.database.crud import (format_extra_prices,
+                               get_dishes_by_restaurant_and_category_and_id)
 from app.database.models import Dish
 from app.database.schemas import DishSchema
 

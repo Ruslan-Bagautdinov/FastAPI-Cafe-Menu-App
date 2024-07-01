@@ -1,34 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from app.database.postgre_db import get_session
 from app.database.models import Basket, Restaurant
-from app.database.schemas import OrderRequest
-from app.database.crud import get_dish_detailed_info
+from app.database.schemas import (OrderRequestSave,
+                                  OrderItemSave,
+                                  OrderRequestReturn,
+                                  OrderItemReturn
+                                  )
+from app.database.crud import get_dish_detailed_info, format_extra_prices
 
 router = APIRouter()
 
 
 @router.post("/")
-async def calculate_cost(order_request: OrderRequest, session: AsyncSession = Depends(get_session)):
-    """
-    Calculate the total cost of orders based on the provided order request and save the details into the 'baskets' table.
-
-    Args:
-        order_request (OrderRequest): The request containing the restaurant ID, table ID, order datetime,
-        and list of orders.
-        session (AsyncSession): The SQLAlchemy asynchronous session, obtained from the dependency.
-
-    Returns:
-        dict: A dictionary containing the restaurant ID, table ID, order datetime, list of orders,
-        the total cost of the orders, currency used in restaurant, and the Basket ID.
-
-    Raises:
-        HTTPException: 404 error if no dishes are found for the given restaurant and dish IDs.
-
-    """
+async def calculate_cost(order_request: OrderRequestSave, session: AsyncSession = Depends(get_session)):
     total_cost = Decimal('0.0')
     restaurant_currency = None
 
@@ -50,14 +38,14 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
         total_cost += dish_cost
 
     order_items_jsonable = jsonable_encoder(order_request.order_items)
-    order_items = order_items_jsonable
-
+    order_items = [OrderItemSave(dish_id=item['dish_id'], extras=format_extra_prices(item['extras'])).dict() for item in
+                   order_items_jsonable]
     basket = Basket(
         restaurant_id=order_request.restaurant_id,
         table_id=order_request.table_id,
         order_datetime=order_request.order_datetime,
         order_items=order_items,
-        total_cost=total_cost,
+        total_cost=total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
         currency=restaurant_currency,
         status="None",
         waiter=None
@@ -66,12 +54,17 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
     await session.flush()
     await session.commit()
 
+    # Convert order_items to OrderItemReturn for the response
+    order_items_return = [OrderItemReturn(dish_id=item['dish_id'], extras={key: (name, str(Decimal(price).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))) for key, (name, price) in item['extras'].items()}).dict() for item in order_items_jsonable]
+    print(order_items_return)
+
     return {
         "basket_id": basket.id,
         "restaurant_id": order_request.restaurant_id,
         "table_id": order_request.table_id,
         "order_datetime": order_request.order_datetime,
-        "order_items": order_items,
-        "total_cost": total_cost,
+        "order_items": order_items_return,
+        "total_cost": f"{total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):.2f}",
         "currency": restaurant_currency
     }
+

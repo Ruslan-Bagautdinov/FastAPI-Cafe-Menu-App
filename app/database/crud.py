@@ -16,6 +16,17 @@ from app.database.models import (Restaurant,
                                  )
 
 
+def format_extra_prices(extra: Optional[Dict]) -> Optional[Dict]:
+    if extra is None:
+        return None
+    formatted_extra = {}
+    for key, value in extra.items():
+        description, price = value
+        formatted_price = Decimal(str(price)).quantize(Decimal('0.01'))
+        formatted_extra[key] = [description, formatted_price]
+    return formatted_extra
+
+
 async def get_restaurant_id_name_pairs(session: AsyncSession) -> dict:
     """
     Retrieves a dictionary mapping restaurant IDs to their names.
@@ -118,8 +129,8 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
     dish_list = []
 
     for dish in dishes:
-
         dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
+        dish.extra = format_extra_prices(dish.extra)
 
         dish_info = {
             "id": dish.id,
@@ -160,6 +171,9 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
     if not dish:
         return None
 
+    dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
+    dish.extra = format_extra_prices(dish.extra)
+
     dish_details = {
         "id": dish.id,
         "restaurant_name": dish.restaurant.name,
@@ -167,7 +181,7 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
         "name": dish.name,
         "photo": dish.photo,
         "description": dish.description,
-        "price": Decimal(str(dish.price)).quantize(Decimal('0.01')),  # Ensure price has 2 decimal places
+        "price": dish.price,
         "currency": dish.restaurant.currency,
         "extra": dish.extra
     }
