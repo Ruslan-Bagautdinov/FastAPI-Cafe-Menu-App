@@ -8,7 +8,7 @@ from app.database.crud import get_restaurant_id_name_pairs
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("/", description="Retrieves a dictionary mapping restaurant IDs to their names.")
 async def get_id_name_pairs(session: AsyncSession = Depends(get_session)):
     """
     Retrieves a dictionary mapping restaurant IDs to their names.
