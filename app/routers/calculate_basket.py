@@ -8,7 +8,7 @@ from app.database.models import Basket, Restaurant
 from app.database.schemas import (OrderRequest,
                                   OrderItemResponse,
                                   CalculateCostResponse)
-from app.database.crud import get_dish_detailed_info
+from app.database.crud import get_dish_detailed_info, get_dish_basket_info
 
 router = APIRouter()
 
@@ -31,7 +31,7 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
     order_items_response = []
 
     for order in order_request.order_items:
-        dish = await get_dish_detailed_info(session, dish_id=order.dish_id)
+        dish = await get_dish_basket_info(session, dish_id=order.dish_id)
         if not dish:
             raise HTTPException(status_code=404,
                                 detail=f"Dish with ID {order.dish_id} not found for restaurant {order_request.restaurant_id}")
@@ -45,6 +45,7 @@ async def calculate_cost(order_request: OrderRequest, session: AsyncSession = De
         dish_cost = Decimal(str(dish["price"]))
         for extra, (_, extra_cost) in order.extras.items():
             dish_cost += Decimal(extra_cost)
+
         total_cost += dish_cost
 
         # Include dish price in the response

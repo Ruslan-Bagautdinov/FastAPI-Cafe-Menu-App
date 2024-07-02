@@ -189,6 +189,47 @@ async def get_dish_detailed_info(session: AsyncSession, dish_id: int):
     return dish_details
 
 
+async def get_dish_basket_info(session: AsyncSession, dish_id: int):
+    """
+    Retrieves detailed information about a Dish including related Restaurant and Category details.
+
+    Args:
+        session (AsyncSession): The SQLAlchemy asynchronous session.
+        dish_id (int): The ID of the Dish to retrieve.
+
+    Returns:
+        dict: A dictionary containing detailed information about the Dish.
+    """
+
+    query = select(Dish).options(
+        selectinload(Dish.restaurant),
+        selectinload(Dish.category)
+    ).where(Dish.id == dish_id)
+
+    result = await session.execute(query)
+    dish = result.scalars().first()
+
+    if not dish:
+        return None
+
+    dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
+    # dish.extra = format_extra_prices(dish.extra)
+
+    dish_details = {
+        "id": dish.id,
+        "restaurant_name": dish.restaurant.name,
+        "category_name": dish.category.name,
+        "name": dish.name,
+        "photo": dish.photo,
+        "description": dish.description,
+        "price": dish.price,
+        "currency": dish.restaurant.currency,
+        "extra": dish.extra
+    }
+
+    return dish_details
+
+
 # async def add_call(session: AsyncSession, restaurant_id: int, table_id: int, status: str):
 #     new_call = WaiterCall(
 #         restaurant_id=restaurant_id,

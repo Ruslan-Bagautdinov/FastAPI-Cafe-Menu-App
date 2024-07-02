@@ -26,3 +26,5 @@ async def get_id_category_pairs(
     """
     pairs = await get_category_id_name_pairs(session, restaurant_id)
     return pairs
+
+
