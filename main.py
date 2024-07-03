@@ -16,7 +16,7 @@ from app.routers import (get_all_restaurants,
                          get_restaurant_by_id,
                          get_dishes,
                          get_dish_details,
-                         get_image,
+                         # get_image,
                          calculate_basket,
                          call_waiter,
                          add_mock_dishes)
@@ -43,13 +43,13 @@ app.include_router(get_all_categories.router, prefix="/all_categories", tags=["a
 app.include_router(get_restaurant_by_id.router, prefix="/restaurant", tags=["restaurant"])
 app.include_router(get_dishes.router, prefix="/dishes", tags=["dishes"])
 app.include_router(get_dish_details.router, prefix="/dish_details", tags=["dish_details"])
-app.include_router(get_image.router, prefix="/images", tags=["images"])
 app.include_router(calculate_basket.router, prefix="/calculate_basket", tags=["calculate_basket"])
 app.include_router(call_waiter.router, prefix="/call_waiter", tags=["call_waiter"])
 
 
 app.include_router(add_mock_dishes.router, prefix="/add_mock_dishes", tags=["add_mock_dishes"])
 
+# app.include_router(get_image.router, prefix="/images", tags=["images"])
 
 @app.get("/")
 async def root():
