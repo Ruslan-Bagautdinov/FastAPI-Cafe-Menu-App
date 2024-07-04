@@ -6,13 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List, Dict
 from decimal import Decimal
 
-import uuid
 
 # own imports
 from app.database.models import (Restaurant,
                                  Dish,
-                                 Category,
-                                 WaiterCall
+                                 Category
                                  )
 
 
@@ -107,7 +105,8 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
         dish_id (Optional[int]): The ID of the specific dish to retrieve. Defaults to None.
 
     Returns:
-        List[dict] | None: A list of dictionaries containing dish details and restaurant currency, or None if no dishes are found.
+        List[dict] | None: A list of dictionaries containing dish details and restaurant currency,
+        or None if no dishes are found.
     """
     query = select(Dish).options(selectinload(Dish.restaurant))
 
@@ -228,179 +227,3 @@ async def get_dish_basket_info(session: AsyncSession, dish_id: int):
     }
 
     return dish_details
-
-
-# async def add_call(session: AsyncSession, restaurant_id: int, table_id: int, status: str):
-#     new_call = WaiterCall(
-#         restaurant_id=restaurant_id,
-#         table_id=table_id,
-#         status=status
-#     )
-#     session.add(new_call)
-#     await session.commit()
-#     await session.refresh(new_call)
-#     return new_call
-
-
-#
-# async def create_user(session: AsyncSession, restaurant_id: int, table_id: int):
-#     """
-#     Creates a new User and an associated Basket in the database.
-#
-#     Args:
-#         session (AsyncSession): The SQLAlchemy asynchronous session.
-#         table_id (int): The table ID where the user is seated.
-#         restaurant_id (int): The ID of the restaurant the user is associated with.
-#
-#     Returns:
-#         Tuple[User, Basket]: A tuple containing the created User and Basket objects.
-#     """
-#     # Create a new User
-#     user = User(restaurant_id=restaurant_id, table_id=table_id)
-#     session.add(user)
-#     await session.flush()  # Ensure the user gets an ID
-#
-#     # Create a new Basket associated with the new User
-#     basket = Basket(user_id=user.id)
-#     session.add(basket)
-#     await session.commit()
-#
-#     return user, basket
-#
-#
-# async def create_order(session: AsyncSession, user_id: int, dish_id: int, extra: Optional[dict] = None):
-#     """
-#     Creates a new order and adds it to the user's basket.
-#
-#     Args:
-#         session (AsyncSession): The SQLAlchemy asynchronous session.
-#         user_id (int): The ID of the user.
-#         dish_id (int): The ID of the dish being ordered.
-#         extra (Optional[dict]): Additional information about the order.
-#
-#     Returns:
-#         Order: The created Order object.
-#     """
-#     # Create the new order
-#     order = Order(user_id=user_id, dish_id=dish_id, extra=extra)
-#     session.add(order)
-#     await session.flush()  # To get the order's primary key
-#
-#     # Find the basket for the user and add the order to it
-#     basket_query = await session.execute(
-#         select(Basket).where(Basket.user_id == user_id)
-#     )
-#     basket = basket_query.scalars().first()
-#     if not basket:
-#         # Create a new Basket if it doesn't exist
-#         basket = Basket(user_id=user_id)
-#         session.add(basket)
-#         await session.flush()  # To get the basket's primary key
-#
-#     basket.orders.append(order)
-#     await session.commit()
-#     return order
-#
-#
-# async def get_basket_orders(session: AsyncSession, user_id: int):
-#     """
-#     Retrieves all orders in a user's basket.
-#
-#     Args:
-#         session (AsyncSession): The SQLAlchemy asynchronous session.
-#         user_id (int): The ID of the user.
-#
-#     Returns:
-#         List[Order]: A list of Order objects in the user's basket.
-#     """
-#
-#     # Find the user for the given user_id
-#     user_query = await session.execute(
-#         select(User).where(User.id == user_id)
-#     )
-#     user = user_query.scalars().first()
-#     if not user:
-#         return []
-#
-#     # Find the basket for the user
-#     basket_query = await session.execute(
-#         select(Basket).options(selectinload(Basket.orders)).where(Basket.user_id == user_id)
-#     )
-#     basket = basket_query.scalars().first()
-#     if basket:
-#         return basket.orders
-#     return []
-#
-#
-# async def create_completed_basket(session: AsyncSession, user_id: int):
-#     """
-#     Creates a new CompletedBasket record for the given user_id.
-#
-#     Args:
-#         session (AsyncSession): The SQLAlchemy asynchronous session.
-#         user_id (int): The user ID for which to create the CompletedBasket.
-#
-#     Returns:
-#         CompletedBasket: The created CompletedBasket object.
-#     """
-#     # Fetch the User record to get the fetching_time and table_id
-#     user_query = await session.execute(
-#         select(User).where(User.id == user_id)
-#     )
-#     user = user_query.scalars().first()
-#     if not user:
-#         raise ValueError(f"No user found for user_id: {user_id}")
-#
-#     # Fetch the Restaurant record to get the restaurant_name
-#     restaurant_query = await session.execute(
-#         select(Restaurant).where(Restaurant.id == user.restaurant_id)
-#     )
-#     restaurant = restaurant_query.scalars().first()
-#     if not restaurant:
-#         raise ValueError(f"No restaurant found for restaurant_id: {user.restaurant_id}")
-#
-#     # Fetch the Basket record to get the list of orders
-#     basket_query = await session.execute(
-#         select(Basket).options(selectinload(Basket.orders)).where(Basket.user_id == user_id)
-#     )
-#     basket = basket_query.scalars().first()
-#     if not basket:
-#         raise ValueError(f"No basket found for user_id: {user_id}")
-#
-#     # Extract dish_id and extras from each order
-#     orders_data = [(order.dish_id, order.extra) for order in basket.orders]
-#
-#     # Create a new CompletedBasket record
-#     completed_basket = CompletedBasket(
-#         restaurant_name=restaurant.name,
-#         table_id=user.table_id,
-#         orders_time=user.time,
-#         orders_data=orders_data
-#     )
-#     session.add(completed_basket)
-#     await session.commit()
-#     await session.refresh(completed_basket)
-#
-#     return completed_basket
-#
-#
-# async def delete_user(session: AsyncSession, table_id: int):
-#     """
-#     Deletes a user from the database.
-#
-#     Args:
-#         session (AsyncSession): The SQLAlchemy asynchronous session.
-#         table_id (int): The table ID where the user is seated.
-#
-#     Returns:
-#         bool: True if the user was deleted successfully, False otherwise.
-#     """
-#     user_query = await session.execute(
-#         select(User).where(User.table_id == table_id)
-#     )
-#     user = user_query.scalars().first()
-#     if user:
-#         await session.delete(user)
-#         await session.commit()
-#         return True
-#     return False

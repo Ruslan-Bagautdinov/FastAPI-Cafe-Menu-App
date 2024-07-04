@@ -1,11 +1,10 @@
-from sqlalchemy import (Column,
-                        Integer,
+from sqlalchemy import (Integer,
                         ForeignKey,
                         DateTime,
                         JSON,
                         String,
-                        Numeric,
-                        Enum)
+                        Numeric
+                        )
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -52,7 +51,7 @@ class Dish(Base):
     photo: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=False)
     price: Mapped[float] = mapped_column(nullable=False)
-    extra: Mapped[dict] = mapped_column(JSON)
+    extra: Mapped[dict] = mapped_column(JSON, nullable=True)
 
     restaurant: Mapped['Restaurant'] = relationship('Restaurant', back_populates='dishes')
     category: Mapped['Category'] = relationship('Category', back_populates='dishes')
@@ -81,4 +80,3 @@ class WaiterCall(Base):
     restaurant_id: Mapped[int] = mapped_column(Integer, nullable=False)
     table_id: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False)
-

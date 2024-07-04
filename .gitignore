@@ -2,7 +2,7 @@
 .idea/
 .git/
 .stuff/
+static
+/img/*
 **/__pycache__/
 .env
-
-

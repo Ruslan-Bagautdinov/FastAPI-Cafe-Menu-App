@@ -44,7 +44,8 @@ async def get_image(
         photo_bytes = await read_photo(default_avatar_path)
 
     if photo_bytes is None:
-        raise HTTPException(status_code=404, detail="Default photo not found")
+        # raise HTTPException(status_code=404, detail="Default photo not found")
+        return None
 
     # Determine the media type based on the file extension
     file_extension = photo.split('.')[-1].lower() if photo else 'jpeg'

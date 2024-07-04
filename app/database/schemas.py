@@ -95,39 +95,3 @@ class WaiterCallResponse(BaseModel):
     restaurant_id: int = Field(..., description="ID of the restaurant")
     table_id: int = Field(..., description="ID of the table")
     status: str = Field(..., description="Status of the waiter call")
-
-
-
-
-#
-# class UserBasketResponse(BaseModel):
-#     user_id: int
-#     restaurant_id: int
-#     table_id: int
-#     basket_id: int
-#
-#
-# class OrderCreate(BaseModel):
-#     user_id: int
-#     dish_id: int
-#     extra: Optional[Dict] = None
-#
-#
-# class OrderSchema(BaseModel):
-#     user_id: int
-#     table_id: int
-#     dish_id: int
-#     extra: Optional[Dict] = None
-#
-#     class Config:
-#         from_attributes = True
-#
-#
-# class BasketView(BaseModel):
-#     id: int
-#     user_id: int
-#     orders: List[OrderSchema]
-#
-#     class Config:
-#         from_attributes = True
-

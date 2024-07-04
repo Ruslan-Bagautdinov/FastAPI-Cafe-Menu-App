@@ -5,6 +5,7 @@ load_dotenv(find_dotenv())
 
 WORK_DATABASE_URL = os.getenv('WORK_DATABASE_URL')
 LOCAL_DATABASE_URL = os.getenv('LOCAL_DATABASE_URL')
+TEST_DB_URL = os.getenv('TEST_DB_URL')
 
 HOME_DB = os.getenv('HOME_DB', False)
 
