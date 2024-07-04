@@ -5,12 +5,11 @@ import io
 
 from app.tools.functions import read_photo
 from app.config import MIME_TYPES
+from app.config import MAIN_PHOTO_FOLDER
 
 router = APIRouter()
 
-from app.config import MAIN_PHOTO_FOLDER
 default_avatar_path = os.path.join(MAIN_PHOTO_FOLDER, 'default_cafe_04.jpeg')
-
 
 @router.get("/")
 async def get_image(
@@ -37,18 +36,31 @@ async def get_image(
         full_path = default_avatar_path
 
     if os.path.exists(full_path):
+        print('path exists', full_path)
         photo_bytes = await read_photo(full_path)
-        if photo_bytes is None:
-            photo_bytes = await read_photo(default_avatar_path)
     else:
+        print('path NOT exists', full_path)
+        photo_bytes = None
+
+    if photo_bytes is None:
+        print('Loading default photo due to previous error or non-existence')
         photo_bytes = await read_photo(default_avatar_path)
 
     if photo_bytes is None:
-        # raise HTTPException(status_code=404, detail="Default photo not found")
-        return None
+        raise HTTPException(status_code=404, detail="Default photo not found")
 
     # Determine the media type based on the file extension
-    file_extension = photo.split('.')[-1].lower() if photo else 'jpeg'
+    _, default_extension = os.path.splitext(default_avatar_path)
+    default_extension = default_extension[1:].lower()  # Remove the leading dot and convert to lowercase
+
+    if photo:
+        _, file_extension = os.path.splitext(photo)
+        file_extension = file_extension[1:].lower() if file_extension else default_extension
+    else:
+        file_extension = default_extension
+
+    print('photo', photo, 'file_extension', file_extension)
+
     media_type = MIME_TYPES.get(file_extension, "application/octet-stream")
 
     return StreamingResponse(io.BytesIO(photo_bytes), media_type=media_type)

@@ -128,6 +128,9 @@ async def get_dishes_by_restaurant_and_category_and_id(session: AsyncSession,
     dish_list = []
 
     for dish in dishes:
+        if dish.restaurant is None:
+            continue  # Skip dishes without an associated restaurant
+
         dish.price = Decimal(str(dish.price)).quantize(Decimal('0.01'))
         dish.extra = format_extra_prices(dish.extra)
 
