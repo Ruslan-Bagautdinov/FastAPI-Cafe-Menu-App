@@ -39,7 +39,8 @@ async def get_restaurant(restaurant_id: int = Query(..., description="The ID of 
         "name": restaurant.name,
         "photo": restaurant.photo,
         "rating": '%.1f' % restaurant.rating,
-        "tables_amount": restaurant.tables_amount
+        "tables_amount": restaurant.tables_amount,
+        "restaurant_currency": restaurant.currency  # Include the currency in the response
     }
 
     return restaurant_data

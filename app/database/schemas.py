@@ -37,6 +37,7 @@ class RestaurantSchema(BaseModel):
     photo: Optional[str]
     rating: Optional[Decimal]
     tables_amount: Optional[int]
+    restaurant_currency: Optional[str]
 
     @field_validator('rating')
     @classmethod
