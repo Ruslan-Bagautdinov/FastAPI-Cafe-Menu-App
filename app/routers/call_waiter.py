@@ -22,6 +22,7 @@ async def create_or_update_waiter_call(
                 "restaurant_id": 7,
                 "table_id": 15,
                 "status": "call" or "clean" or "check"
+                "call_datetime": "2021-08-02T00:00:00Z",
             }
             session (AsyncSession): The SQLAlchemy asynchronous session.
 
@@ -37,12 +38,14 @@ async def create_or_update_waiter_call(
     existing_call = result.scalar_one_or_none()
 
     if existing_call:
+        existing_call.call_datetime = waiter_call_request.call_datetime
         existing_call.status = waiter_call_request.status
         await session.commit()
         await session.refresh(existing_call)
         return existing_call
     else:
         new_call = WaiterCall(
+            call_datetime = waiter_call_request.call_datetime,
             restaurant_id=waiter_call_request.restaurant_id,
             table_id=waiter_call_request.table_id,
             status=waiter_call_request.status
