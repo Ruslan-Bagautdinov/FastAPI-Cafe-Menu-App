@@ -94,6 +94,7 @@ class WaiterCallCreateRequest(BaseModel):
 
 class WaiterCallResponse(BaseModel):
     id: uuid.UUID = Field(..., description="Unique identifier of the waiter call")
+    call_datetime: datetime = Field(..., description="Date and time of the waiter call")
     restaurant_id: int = Field(..., description="ID of the restaurant")
     table_id: int = Field(..., description="ID of the table")
     status: str = Field(..., description="Status of the waiter call")
